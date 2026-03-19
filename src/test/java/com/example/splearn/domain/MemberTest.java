@@ -46,9 +46,9 @@ class MemberTest {
 	void activateFail() {
 		member.activate();
 
-		assertThatThrownBy(() -> {
-			member.activate();
-		}).isInstanceOf(IllegalStateException.class);
+		assertThatThrownBy(() ->
+			member.activate()
+		).isInstanceOf(IllegalStateException.class);
 	}
 
 	@DisplayName("회원 탈퇴 : ACTIVE -> DEACTIVATED")
@@ -64,16 +64,16 @@ class MemberTest {
 	@DisplayName("회원 탈퇴 | 예외발생 : PENDING, DEACTIVATED -> DEACTIVATED")
 	@Test
 	void deactivateFail() {
-		assertThatThrownBy(() -> {
-			member.deactivate();
-		}).isInstanceOf(IllegalStateException.class);
+		assertThatThrownBy(() ->
+			member.deactivate()
+		).isInstanceOf(IllegalStateException.class);
 
 		member.activate();
 		member.deactivate();
 
-		assertThatThrownBy(() -> {
-			member.deactivate();
-		}).isInstanceOf(IllegalStateException.class);
+		assertThatThrownBy(() ->
+			member.deactivate()
+		).isInstanceOf(IllegalStateException.class);
 	}
 
 	@DisplayName("비밀번호 검증")
@@ -119,7 +119,7 @@ class MemberTest {
 	@Test
 	void invalidEmail() {
 		assertThatThrownBy(() ->
-				Member.create(new MemberCreateRequest("kk", "Minsoo", "secret"), passwordEncoder)
+			Member.create(new MemberCreateRequest("kk", "Minsoo", "secret"), passwordEncoder)
 		).isInstanceOf(IllegalArgumentException.class);
 
 		Member.create(new MemberCreateRequest("naminsoo1020@naver.com", "Minsoo", "secret"), passwordEncoder);
