@@ -1,5 +1,6 @@
 package com.example.splearn.domain;
 
+import static com.example.splearn.domain.MemberFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,23 +14,13 @@ class MemberTest {
 
 	@BeforeEach
 	void setUp() {
-		this.passwordEncoder = new PasswordEncoder() {
-			@Override
-			public String encode(String password) {
-				return password.toUpperCase();
-			}
-
-			@Override
-			public boolean matches(String password, String passwordHash) {
-				return encode(password).equals(passwordHash);
-			}
-		};
-		member = Member.create(new MemberCreateRequest("naminsoo1020@naver.com", "Minsoo", "secret"), passwordEncoder);
+		this.passwordEncoder = createPasswordEncoder();
+		member = Member.register(createMemberRegisterRequest(), passwordEncoder);
 	}
 
 	@DisplayName("회원 생성 : 생성시, status = PENDING")
 	@Test
-	void createMember() {
+	void registerMember() {
 		assertThat(member.getStatus()).isEqualTo(MemberStatus.PENDING);
 	}
 
@@ -79,7 +70,7 @@ class MemberTest {
 	@DisplayName("비밀번호 검증")
 	@Test
 	void verifyPassword() {
-		assertThat(member.verifyPassword("secret", passwordEncoder)).isTrue();
+		assertThat(member.verifyPassword("verysecret", passwordEncoder)).isTrue();
 		assertThat(member.verifyPassword("open", passwordEncoder)).isFalse();
 	}
 
@@ -88,17 +79,17 @@ class MemberTest {
 	void changeNickname() {
 		assertThat(member.getNickname()).isEqualTo("Minsoo");
 
-		member.changeNickname("Change");
+		member.changeNickname("Changes");
 
-		assertThat(member.getNickname()).isEqualTo("Change");
+		assertThat(member.getNickname()).isEqualTo("Changes");
 	}
 
 	@DisplayName("비밀번호 변경")
 	@Test
 	void changePassword() {
-		member.changePassword("verysecret", passwordEncoder);
+		member.changePassword("verysecret2", passwordEncoder);
 
-		assertThat(member.verifyPassword("verysecret", passwordEncoder)).isTrue();
+		assertThat(member.verifyPassword("verysecret2", passwordEncoder)).isTrue();
 	}
 
 	@DisplayName("활성상태인 회원 검증")
@@ -119,10 +110,9 @@ class MemberTest {
 	@Test
 	void invalidEmail() {
 		assertThatThrownBy(() ->
-			Member.create(new MemberCreateRequest("kk", "Minsoo", "secret"), passwordEncoder)
+			Member.register(createMemberRegisterRequest("invalid Email"), passwordEncoder)
 		).isInstanceOf(IllegalArgumentException.class);
 
-		Member.create(new MemberCreateRequest("naminsoo1020@naver.com", "Minsoo", "secret"), passwordEncoder);
+		Member.register(createMemberRegisterRequest(), passwordEncoder);
 	}
-
 }
